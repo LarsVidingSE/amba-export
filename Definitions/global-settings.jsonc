@@ -1,0 +1,19 @@
+{
+    "pacOwnerId": "4f5222f0-6677-4987-8de6-6fbc97ab631f",
+    "managedIdentityLocations": {
+        "*": "westeurope"
+    },
+    "globalNotScopes": {
+        "*": [
+            "/resourceGroupPatterns/excluded-rg*"
+        ]
+    },
+    "pacEnvironments": [
+        {
+            "pacSelector": "amba",
+            "cloud": "AzureCloud",
+            "tenantId": "",
+            "deploymentRootScope": "/providers/Microsoft.Management/managementGroups/amba"
+        }
+    ]
+}
