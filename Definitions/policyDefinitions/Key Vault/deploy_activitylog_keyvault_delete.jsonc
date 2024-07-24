@@ -1,28 +1,29 @@
 {
+  "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-definition-schema.json",
   "name": "Deploy_activitylog_KeyVault_Delete",
   "properties": {
     "displayName": "Deploy Activity Log Key Vault Delete Alert",
     "description": "Policy to Deploy Activity Log Key Vault Delete Alert",
     "mode": "All",
     "metadata": {
-      "version": "1.0.1",
-      "source": "https://github.com/Azure/azure-monitor-baseline-alerts/",
       "_deployed_by_amba": "True",
+      "category": "Key Vault",
+      "version": "1.0.1",
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "category": "Key Vault"
+      "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
     "parameters": {
       "enabled": {
-        "allowedValues": [
-          "true",
-          "false"
-        ],
         "metadata": {
           "description": "Alert state for the alert",
           "displayName": "Alert State"
         },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
         "defaultValue": "true",
         "type": "String"
       },
@@ -32,6 +33,14 @@
           "displayName": "Resource Group Name"
         },
         "defaultValue": "AlzMonitoring-rg",
+        "type": "String"
+      },
+      "MonitorDisable": {
+        "metadata": {
+          "description": "Tag name to disable monitoring on resource. Set to true if monitoring should be disabled",
+          "displayName": "Effect"
+        },
+        "defaultValue": "MonitorDisable",
         "type": "String"
       },
       "alertResourceGroupLocation": {
@@ -52,22 +61,14 @@
           "environment": "test"
         },
         "type": "Object"
-      },
-      "monitorDisable": {
-        "metadata": {
-          "description": "Tag name to disable monitoring on resource. Set to true if monitoring should be disabled",
-          "displayName": "Effect"
-        },
-        "defaultValue": "MonitorDisable",
-        "type": "String"
       }
     },
     "policyRule": {
       "if": {
         "allOf": [
           {
-            "field": "type",
-            "equals": "microsoft.keyvault/vaults"
+            "equals": "microsoft.keyvault/vaults",
+            "field": "type"
           },
           {
             "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
@@ -79,11 +80,12 @@
         "effect": "deployIfNotExists",
         "details": {
           "type": "Microsoft.Insights/activityLogAlerts",
+          "name": "ActivityKeyVaultDelete",
           "existenceCondition": {
             "allOf": [
               {
-                "field": "Microsoft.Insights/ActivityLogAlerts/enabled",
-                "equals": "[parameters('enabled')]"
+                "equals": "[parameters('enabled')]",
+                "field": "Microsoft.Insights/ActivityLogAlerts/enabled"
               },
               {
                 "equals": 2,
@@ -94,24 +96,24 @@
                       {
                         "allOf": [
                           {
-                            "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].field",
-                            "equals": "category"
+                            "equals": "category",
+                            "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].field"
                           },
                           {
-                            "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].equals",
-                            "equals": "Administrative"
+                            "equals": "Administrative",
+                            "field": "Microsoft.Insights/ActivityLogAlerts/condition.allOf[*].equals"
                           }
                         ]
                       },
                       {
                         "allOf": [
                           {
-                            "field": "microsoft.insights/activityLogAlerts/condition.allOf[*].field",
-                            "equals": "operationName"
+                            "equals": "operationName",
+                            "field": "microsoft.insights/activityLogAlerts/condition.allOf[*].field"
                           },
                           {
-                            "field": "microsoft.insights/activityLogAlerts/condition.allOf[*].equals",
-                            "equals": "Microsoft.KeyVault/vaults/delete"
+                            "equals": "Microsoft.KeyVault/vaults/delete",
+                            "field": "microsoft.insights/activityLogAlerts/condition.allOf[*].equals"
                           }
                         ]
                       }
@@ -124,7 +126,6 @@
           "roleDefinitionIds": [
             "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
           ],
-          "name": "ActivityKeyVaultDelete",
           "deployment": {
             "properties": {
               "parameters": {
@@ -158,11 +159,12 @@
                   }
                 },
                 "contentVersion": "1.0.0.0",
+                "variables": {},
                 "resources": [
                   {
                     "type": "Microsoft.Resources/resourceGroups",
-                    "apiVersion": "2021-04-01",
                     "name": "[parameters('alertResourceGroupName')]",
+                    "apiVersion": "2021-04-01",
                     "location": "[parameters('alertResourceGroupLocation')]",
                     "tags": "[parameters('alertResourceGroupTags')]"
                   },
@@ -189,6 +191,7 @@
                           }
                         },
                         "contentVersion": "1.0.0.0",
+                        "variables": {},
                         "resources": [
                           {
                             "type": "microsoft.insights/activityLogAlerts",
@@ -206,12 +209,12 @@
                               "condition": {
                                 "allOf": [
                                   {
-                                    "field": "category",
-                                    "equals": "Administrative"
+                                    "equals": "Administrative",
+                                    "field": "category"
                                   },
                                   {
-                                    "field": "operationName",
-                                    "equals": "Microsoft.KeyVault/vaults/delete"
+                                    "equals": "Microsoft.KeyVault/vaults/delete",
+                                    "field": "operationName"
                                   },
                                   {
                                     "field": "status",
@@ -222,34 +225,32 @@
                                 ]
                               }
                             },
-                            "apiVersion": "2020-10-01",
                             "name": "ActivityKeyVaultDelete",
+                            "apiVersion": "2020-10-01",
                             "location": "global",
                             "tags": {
                               "_deployed_by_amba": true
                             }
                           }
                         ],
-                        "variables": {},
                         "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
                       }
                     },
-                    "apiVersion": "2019-10-01",
                     "name": "ActivityKeyVaultDelete",
+                    "apiVersion": "2019-10-01",
                     "dependsOn": [
                       "[concat('Microsoft.Resources/resourceGroups/', parameters('alertResourceGroupName'))]"
                     ]
                   }
                 ],
-                "variables": {},
                 "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
               }
             },
             "location": "australiaeast"
           },
           "resourceGroupName": "[parameters('alertResourceGroupName')]",
-          "existenceScope": "resourcegroup",
-          "deploymentScope": "subscription"
+          "deploymentScope": "subscription",
+          "existenceScope": "resourcegroup"
         }
       }
     }

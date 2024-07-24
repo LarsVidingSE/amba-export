@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-assignment-schema.json",
   "nodeName": "/root",
   "definitionEntry": {
     "policySetName": "Alerting-Identity",
@@ -19,35 +20,35 @@
     "_deployed_by_amba": true
   },
   "parameters": {
-    "kvCapacityThreshold": "75",
-    "kvCapacityPolicyEffect": "disabled",
-    "kvAvailabilityEvaluationFrequency": "PT1M",
-    "kvAvailabilityThreshold": "20",
-    "kvRequestWindowSize": "PT5M",
-    "kvAvailabilityAlertSeverity": "1",
-    "kvLatencyAvailabilityAlertSeverity": "3",
-    "kvCapacityWindowSize": "PT5M",
-    "kvLatencyAvailabilityAlertState": "true",
-    "alzMonitorResourceGroupLocation": "eastus",
-    "kvCapacityAlertSeverity": "1",
-    "kvLatencyAvailabilityEvaluationFrequency": "PT5M",
-    "kvLatencyAvailabilityWindowSize": "PT5M",
-    "kvCapacityEvaluationFrequency": "PT1M",
-    "kvRequestAlertState": "true",
-    "kvRequestEvaluationFrequency": "PT5M",
+    "KvAvailabilityEvaluationFrequency": "PT1M",
+    "KVRequestAlertSeverity": "2",
+    "KVRequestAlertState": "true",
+    "KvAvailabilityAlertState": "true",
+    "KVCapacityEvaluationFrequency": "PT1M",
+    "ALZMonitorResourceGroupLocation": "australiaeast",
+    "KvLatencyAvailabilityPolicyEffect": "disabled",
+    "KVCapacityAlertSeverity": "1",
+    "KVCapacityPolicyEffect": "disabled",
+    "KvLatencyAvailabilityAlertSeverity": "3",
+    "KVRequestWindowSize": "PT5M",
     "activityKVDeleteAlertState": "true",
-    "kvAvailabilityAlertState": "true",
-    "kvAvailabilityWindowSize": "PT1M",
-    "kvCapacityAlertState": "true",
-    "alzMonitorResourceGroupTags": {
-      "Project": "alz-monitor"
+    "KVRequestPolicyEffect": "disabled",
+    "KVCapacityThreshold": "75",
+    "ALZMonitorResourceGroupName": "rg-amba-monitoring-001",
+    "KvLatencyAvailabilityEvaluationFrequency": "PT5M",
+    "KvAvailabilityWindowSize": "PT1M",
+    "KvLatencyAvailabilityWindowSize": "PT5M",
+    "KVCapacityAlertState": "true",
+    "KVRequestEvaluationFrequency": "PT5M",
+    "KvAvailabilityAlertSeverity": "1",
+    "KVAvailabilityThreshold": "20",
+    "ALZMonitorResourceGroupTags": {
+      "Project": "amba-monitoring"
     },
-    "kvLatencyAvailabilityThreshold": "1000",
-    "kvRequestPolicyEffect": "disabled",
-    "kvAvailabilityPolicyEffect": "disabled",
-    "alzMonitorResourceGroupName": "rg-amba-monitor",
-    "kvRequestAlertSeverity": "2",
-    "kvLatencyAvailabilityPolicyEffect": "disabled"
+    "KvAvailabilityPolicyEffect": "disabled",
+    "KVCapacityWindowSize": "PT5M",
+    "KvLatencyAvailabilityThreshold": "1000",
+    "KvLatencyAvailabilityAlertState": "true"
   },
   "scope": {
     "amba": [

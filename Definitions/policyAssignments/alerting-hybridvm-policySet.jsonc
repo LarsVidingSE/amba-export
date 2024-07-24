@@ -1,0 +1,233 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-assignment-schema.json",
+  "nodeName": "/root",
+  "definitionEntry": {
+    "policySetName": "Alerting-HybridVM",
+    "displayName": "Deploy Azure Monitor Baseline Alerts for Hybrid VMs",
+    "nonComplianceMessages": [
+      {
+        "policyDefinitionReferenceId": null,
+        "message": "Alerting must be deployed to Azure services."
+      }
+    ]
+  },
+  "assignment": {
+    "name": "Deploy-AMBA-HybridVM",
+    "displayName": "Deploy Azure Monitor Baseline Alerts for Hybrid VMs",
+    "description": "Initiative to deploy AMBA Hybrid VM alerts"
+  },
+  "metadata": {
+    "_deployed_by_amba": true
+  },
+  "parameters": {
+    "HybridVMDataDiskReadLatencyEvaluationFrequency": "PT5M",
+    "HybridVMNetworkOutEvaluationPeriods": "1",
+    "HybridVMDataDiskWriteLatencyPolicyEffect": "deployIfNotExists",
+    "HybridVMDataDiskSpaceThreshold": "10",
+    "HybridVMDataDiskWriteLatencyFailingPeriods": "1",
+    "ALZMonitorResourceGroupTags": {
+      "Project": "amba-monitoring"
+    },
+    "HybridVMDataDiskReadLatencyEvaluationPeriods": "1",
+    "HybridVMDataDiskWriteLatencyAlertState": "true",
+    "HybridVMDisconnectedAlertSeverity": "1",
+    "HybridVMPercentCPUOperator": "GreaterThan",
+    "HybridVMOSDiskReadLatencyAutoMitigate": "true",
+    "HybridVMHeartBeatRGAlertSeverity": "1",
+    "HybridVMDataDiskWriteLatencyWindowSize": "PT15M",
+    "HybridVMPercentMemoryWindowSize": "PT15M",
+    "HybridVMOSDiskSpacePolicyEffect": "deployIfNotExists",
+    "HybridVMPercentMemoryAutoResolveTime": "00:10:00",
+    "HybridVMDisconnectedAlertTimeAggregation": "Count",
+    "HybridVMDisconnectedAlertAutoMitigate": "false",
+    "HybridVMOSDiskWriteLatencyTimeAggregation": "Average",
+    "HybridVMPercentMemoryTimeAggregation": "Average",
+    "HybridVMOSDiskSpaceAutoMitigate": "true",
+    "HybridVMPercentCPUAutoMitigate": "true",
+    "HybridVMDataDiskSpaceAlertSeverity": "2",
+    "HybridVMDataDiskReadLatencyAutoResolve": "true",
+    "HybridVMOSDiskReadLatencyOperator": "LessThan",
+    "HybridVMOSDiskSpaceThreshold": "10",
+    "HybridVMNetworkOutFailingPeriods": "1",
+    "HybridVMHeartBeatRGThreshold": "10",
+    "HybridVMOSDiskSpaceAlertState": "true",
+    "HybridVMNetworkInComputersToInclude": [
+      "*"
+    ],
+    "HybridVMHeartBeatRGWindowSize": "PT15M",
+    "HybridVMOSDiskSpaceTimeAggregation": "Average",
+    "HybridVMDataDiskWriteLatencyEvaluationFrequency": "PT5M",
+    "HybridVMOSDiskWriteLatencyEvaluationFrequency": "PT5M",
+    "HybridVMOSDiskWriteLatencyAlertState": "true",
+    "HybridVMPercentMemoryEvaluationFrequency": "PT5M",
+    "HybridVMNetworkOutEvaluationFrequency": "PT5M",
+    "HybridVMOSDiskReadLatencyWindowSize": "PT15M",
+    "ALZMonitorResourceGroupName": "rg-amba-monitoring-001",
+    "HybridVMNetworkOutAutoResolve": "true",
+    "HybridVMOSDiskWriteLatencyFailingPeriods": "1",
+    "HybridVMNetworkInFailingPeriods": "1",
+    "HybridVMDataDiskWriteLatencyAutoMitigate": "true",
+    "HybridVMNetworkInEvaluationFrequency": "PT5M",
+    "HybridVMHeartBeatRGAlertState": "true",
+    "HybridVMDataDiskReadLatencyAutoMitigate": "true",
+    "HybridVMHeartBeatRGAutoResolveTime": "00:10:00",
+    "HybridVMDataDiskWriteLatencyEvaluationPeriods": "1",
+    "HybridVMOSDiskWriteLatencyThreshold": "50",
+    "HybridVMDataDiskWriteLatencyDisksToInclude": [
+      "*"
+    ],
+    "HybridVMDataDiskReadLatencyComputersToInclude": [
+      "*"
+    ],
+    "HybridVMHeartBeatRGPolicyEffect": "deployIfNotExists",
+    "HybridVMDataDiskWriteLatencyComputersToInclude": [
+      "*"
+    ],
+    "HybridVMDataDiskSpaceAutoMitigate": "true",
+    "HybridVMPercentMemoryAutoResolve": "true",
+    "HybridVMPercentCPUTimeAggregation": "Average",
+    "HybridVMNetworkInOperator": "GreaterThan",
+    "HybridVMPercentMemoryAlertSeverity": "2",
+    "HybridVMNetworkInEvaluationPeriods": "1",
+    "HybridVMNetworkInAutoResolve": "true",
+    "HybridVMOSDiskWriteLatencyOperator": "LessThan",
+    "HybridVMDataDiskSpaceDisksToInclude": [
+      "*"
+    ],
+    "HybridVMNetworkInPolicyEffect": "deployIfNotExists",
+    "HybridVMNetworkOutWindowSize": "PT15M",
+    "HybridVMDisconnectedAlertOperator": "GreaterThan",
+    "HybridVMOSDiskReadLatencyAutoResolveTime": "00:10:00",
+    "HybridVMDataDiskReadLatencyPolicyEffect": "deployIfNotExists",
+    "HybridVMOSDiskReadLatencyThreshold": "30",
+    "HybridVMPercentCPUEvaluationFrequency": "PT5M",
+    "HybridVMPercentCPUAlertSeverity": "2",
+    "HybridVMOSDiskWriteLatencyComputersToInclude": [
+      "*"
+    ],
+    "HybridVMNetworkOutComputersToInclude": [
+      "*"
+    ],
+    "HybridVMDataDiskSpaceAutoResolveTime": "00:10:00",
+    "HybridVMNetworkInNetworkInterfaceToInclude": [
+      "*"
+    ],
+    "HybridVMDataDiskWriteLatencyOperator": "LessThan",
+    "BYOUserAssignedManagedIdentityResourceId": "",
+    "HybridVMPercentMemoryThreshold": "10",
+    "HybridVMOSDiskSpaceEvaluationFrequency": "PT5M",
+    "ALZUserAssignedManagedIdentityName": "id-amba-prod-001",
+    "HybridVMOSDiskReadLatencyPolicyEffect": "deployIfNotExists",
+    "HybridVMDataDiskWriteLatencyAutoResolveTime": "00:10:00",
+    "HybridVMOSDiskSpaceOperator": "LessThan",
+    "HybridVMNetworkOutPolicyEffect": "deployIfNotExists",
+    "HybridVMDisconnectedAlertEvaluationPeriods": "1",
+    "HybridVMNetworkInAlertState": "true",
+    "HybridVMHeartBeatRGAutoResolve": "true",
+    "HybridVMPercentCPUPolicyEffect": "deployIfNotExists",
+    "HybridVMNetworkOutAutoMitigate": "true",
+    "HybridVMDataDiskWriteLatencyAutoResolve": "true",
+    "HybridVMOSDiskSpaceAutoResolve": "true",
+    "HybridVMOSDiskReadLatencyEvaluationPeriods": "1",
+    "HybridVMDataDiskReadLatencyAutoResolveTime": "00:10:00",
+    "HybridVMOSDiskReadLatencyFailingPeriods": "1",
+    "HybridVMPercentCPUAutoResolve": "true",
+    "HybridVMDisconnectedAlertFailingPeriods": "1",
+    "HybridVMDataDiskSpaceTimeAggregation": "Average",
+    "HybridVMNetworkInAutoResolveTime": "00:10:00",
+    "HybridVMDataDiskReadLatencyAlertSeverity": "2",
+    "HybridVMNetworkInTimeAggregation": "Average",
+    "HybridVMOSDiskReadLatencyAlertState": "true",
+    "HybridVMPercentMemoryAutoMitigate": "true",
+    "HybridVMDataDiskSpaceFailingPeriods": "1",
+    "HybridVMOSDiskSpaceWindowSize": "PT15M",
+    "HybridVMNetworkOutOperator": "GreaterThan",
+    "ALZMonitorResourceGroupLocation": "australiaeast",
+    "HybridVMDataDiskReadLatencyThreshold": "30",
+    "HybridVMDisconnectedAlertPolicyEffect": "deployIfNotExists",
+    "HybridVMDataDiskSpaceWindowSize": "PT15M",
+    "HybridVMOSDiskReadLatencyAutoResolve": "true",
+    "HybridVMOSDiskWriteLatencyAlertSeverity": "2",
+    "HybridVMDataDiskSpaceOperator": "LessThan",
+    "HybridVMOSDiskSpaceDisksToInclude": [
+      "C:",
+      "/"
+    ],
+    "HybridVMOSDiskSpaceEvaluationPeriods": "1",
+    "HybridVMDataDiskSpaceAlertState": "true",
+    "HybridVMDataDiskWriteLatencyTimeAggregation": "Average",
+    "HybridVMOSDiskWriteLatencyEvaluationPeriods": "1",
+    "HybridVMOSDiskWriteLatencyAutoResolveTime": "00:10:00",
+    "HybridVMPercentMemoryPolicyEffect": "deployIfNotExists",
+    "HybridVMNetworkInAlertSeverity": "2",
+    "HybridVMPercentCPUThreshold": "85",
+    "HybridVMNetworkOutThreshold": "10000000",
+    "HybridVMNetworkOutAlertSeverity": "2",
+    "HybridVMOSDiskSpaceAutoResolveTime": "00:10:00",
+    "HybridVMDataDiskSpacePolicyEffect": "deployIfNotExists",
+    "HybridVMNetworkOutAlertState": "true",
+    "HybridVMOSDiskWriteLatencyAutoMitigate": "true",
+    "HybridVMDisconnectedAlertDaysThreshold": "45",
+    "HybridVMDataDiskSpaceEvaluationFrequency": "PT5M",
+    "HybridVMDataDiskReadLatencyOperator": "LessThan",
+    "HybridVMOSDiskWriteLatencyAutoResolve": "true",
+    "HybridVMNetworkInWindowSize": "PT15M",
+    "HybridVMHeartBeatRGOperator": "GreaterThan",
+    "HybridVMNetworkOutNetworkInterfaceToInclude": [
+      "*"
+    ],
+    "HybridVMDataDiskSpaceAutoResolve": "true",
+    "HybridVMOSDiskSpaceComputersToInclude": [
+      "*"
+    ],
+    "HybridVMHeartBeatRGEvaluationFrequency": "PT5M",
+    "HybridVMDataDiskReadLatencyAlertState": "true",
+    "ALZManagementSubscriptionId": "8cfb2a5f-85a5-48ae-88fe-e11d149f9874",
+    "HybridVMOSDiskReadLatencyDisksToInclude": [
+      "C:",
+      "/"
+    ],
+    "HybridVMDataDiskReadLatencyTimeAggregation": "Average",
+    "HybridVMDataDiskReadLatencyFailingPeriods": "1",
+    "HybridVMDisconnectedAlertEvaluationFrequency": "P1D",
+    "HybridVMOSDiskSpaceFailingPeriods": "1",
+    "HybridVMOSDiskSpaceAlertSeverity": "2",
+    "HybridVMNetworkInThreshold": "10000000",
+    "HybridVMPercentCPUAlertState": "true",
+    "HybridVMDisconnectedAlertState": "true",
+    "HybridVMNetworkInAutoMitigate": "true",
+    "HybridVMOSDiskWriteLatencyWindowSize": "PT15M",
+    "HybridVMOSDiskWriteLatencyDisksToInclude": [
+      "C:",
+      "/"
+    ],
+    "HybridVMPercentCPUAutoResolveTime": "00:10:00",
+    "HybridVMOSDiskReadLatencyTimeAggregation": "Average",
+    "HybridVMPercentCPUWindowSize": "PT15M",
+    "HybridVMOSDiskReadLatencyEvaluationFrequency": "PT5M",
+    "HybridVMPercentMemoryAlertState": "true",
+    "HybridVMHeartBeatRGTimeAggregation": "Average",
+    "HybridVMDisconnectedAlertWindowSize": "P1D",
+    "HybridVMDataDiskWriteLatencyAlertSeverity": "2",
+    "HybridVMDataDiskReadLatencyDisksToInclude": [
+      "*"
+    ],
+    "HybridVMDataDiskReadLatencyWindowSize": "PT15M",
+    "HybridVMPercentMemoryOperator": "LessThan",
+    "HybridVMNetworkOutTimeAggregation": "Average",
+    "HybridVMNetworkOutAutoResolveTime": "00:10:00",
+    "HybridVMHeartBeatRGAutoMitigate": "true",
+    "HybridVMDataDiskSpaceEvaluationPeriods": "1",
+    "HybridVMOSDiskReadLatencyAlertSeverity": "2",
+    "HybridVMDataDiskWriteLatencyThreshold": "30",
+    "HybridVMOSDiskWriteLatencyPolicyEffect": "deployIfNotExists",
+    "HybridVMOSDiskReadLatencyComputersToInclude": [
+      "*"
+    ]
+  },
+  "scope": {
+    "amba": [
+      "/providers/Microsoft.Management/managementGroups/amba-landingzones"
+    ]
+  }
+}

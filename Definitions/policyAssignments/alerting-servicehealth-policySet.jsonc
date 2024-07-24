@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-assignment-schema.json",
   "nodeName": "/root",
   "definitionEntry": {
     "policySetName": "Alerting-ServiceHealth",
@@ -19,17 +20,31 @@
     "_deployed_by_amba": true
   },
   "parameters": {
-    "svcHlthAdvisoryAlertState": "true",
+    "ResHlthUnhealthyAlertState": "true",
+    "SvcHlthIncidentAlertState": "true",
+    "serviceHealthIncidentPolicyEffect": "deployIfNotExists",
+    "ALZLogicappResourceId": "",
+    "SvcHlthMaintenanceAlertState": "true",
+    "ALZMonitorResourceGroupName": "rg-amba-monitoring-001",
+    "ALZMonitorResourceGroupLocation": "australiaeast",
+    "BYOActionGroup": "",
+    "BYOAlertProcessingRule": "",
+    "ALZWebhookServiceUri": "",
+    "SvcHlthAdvisoryAlertState": "true",
+    "ALZLogicappCallbackUrl": "",
+    "ResHlthUnhealthyPolicyEffect": "deployIfNotExists",
+    "serviceHealthMaintenancePolicyEffect": "deployIfNotExists",
+    "ALZMonitorActionGroupEmail": "action@mail.com",
+    "serviceHealthSecurityPolicyEffect": "deployIfNotExists",
+    "ALZFunctionResourceId": "",
+    "ALZArmRoleId": "",
+    "ALZEventHubResourceId": "",
     "svcHlthSecAdvisoryAlertState": "true",
-    "alzMonitorResourceGroupName": "rg-amba-monitor",
-    "svcHlthMaintenanceAlertState": "true",
-    "alzMonitorResourceGroupTags": {
-      "Project": "alz-monitor"
+    "ALZMonitorResourceGroupTags": {
+      "Project": "amba-monitoring"
     },
-    "resHlthUnhealthyAlertState": "true",
-    "svcHlthIncidentAlertState": "true",
-    "alzMonitorResourceGroupLocation": "eastus",
-    "alzMonitorActionGroupEmail": "action@mail.com"
+    "ALZFunctionTriggerUrl": "",
+    "serviceHealthAdvisoryPolicyEffect": "deployIfNotExists"
   },
   "scope": {
     "amba": [
