@@ -6,27 +6,15 @@
     "description": "Policy to audit/deploy VPN Gateway Bandwidth Utilization Alert",
     "mode": "All",
     "metadata": {
-      "version": "1.1.0",
-      "_deployed_by_amba": "True",
-      "category": "Network",
       "source": "https://github.com/Azure/azure-monitor-baseline-alerts/",
+      "version": "1.2.0",
+      "_deployed_by_amba": "True",
       "alzCloudEnvironments": [
         "AzureCloud"
-      ]
+      ],
+      "category": "Network"
     },
     "parameters": {
-      "effect": {
-        "metadata": {
-          "description": "Effect of the policy",
-          "displayName": "Effect"
-        },
-        "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
-        ],
-        "defaultValue": "deployIfNotExists",
-        "type": "String"
-      },
       "evaluationFrequency": {
         "metadata": {
           "description": "Evaluation frequency for the alert",
@@ -40,6 +28,27 @@
           "PT1H"
         ],
         "defaultValue": "PT1M",
+        "type": "String"
+      },
+      "MonitorDisableTagValues": {
+        "metadata": {
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
+      "MonitorDisableTagName": {
+        "metadata": {
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
+        },
+        "defaultValue": "MonitorDisable",
         "type": "String"
       },
       "autoMitigate": {
@@ -72,12 +81,36 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
+      "enabled": {
+        "metadata": {
+          "description": "Alert state for the alert",
+          "displayName": "Alert State"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true",
+        "type": "String"
+      },
       "threshold": {
         "metadata": {
           "description": "Threshold for the alert",
           "displayName": "Threshold"
         },
         "defaultValue": "1",
+        "type": "String"
+      },
+      "effect": {
+        "metadata": {
+          "description": "Effect of the policy",
+          "displayName": "Effect"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "deployIfNotExists",
         "type": "String"
       },
       "severity": {
@@ -94,26 +127,6 @@
         ],
         "defaultValue": "0",
         "type": "String"
-      },
-      "enabled": {
-        "metadata": {
-          "description": "Alert state for the alert",
-          "displayName": "Alert State"
-        },
-        "allowedValues": [
-          "true",
-          "false"
-        ],
-        "defaultValue": "true",
-        "type": "String"
-      },
-      "MonitorDisable": {
-        "metadata": {
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled",
-          "displayName": "Effect"
-        },
-        "defaultValue": "MonitorDisable",
-        "type": "String"
       }
     },
     "policyRule": {
@@ -124,8 +137,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -133,9 +146,6 @@
         "effect": "[parameters('effect')]",
         "details": {
           "type": "Microsoft.Insights/metricAlerts",
-          "roleDefinitionIds": [
-            "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-          ],
           "existenceCondition": {
             "allOf": [
               {
@@ -179,11 +189,14 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-tunnelaveragebandwidth-threshold-Override_'), field('tags._amba-tunnelaveragebandwidth-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].threshold"
               }
             ]
           },
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+          ],
           "deployment": {
             "properties": {
               "parameters": {
@@ -199,20 +212,19 @@
                 "windowSize": {
                   "value": "[parameters('windowSize')]"
                 },
+                "enabled": {
+                  "value": "[parameters('enabled')]"
+                },
                 "threshold": {
-                  "value": "[parameters('threshold')]"
+                  "value": "[if(contains(field('tags'), '_amba-tunnelaveragebandwidth-threshold-Override_'), field('tags._amba-tunnelaveragebandwidth-threshold-Override_'), parameters('threshold'))]"
                 },
                 "severity": {
                   "value": "[parameters('severity')]"
-                },
-                "enabled": {
-                  "value": "[parameters('enabled')]"
                 },
                 "resourceName": {
                   "value": "[field('name')]"
                 }
               },
-              "mode": "incremental",
               "template": {
                 "parameters": {
                   "resourceId": {
@@ -231,13 +243,13 @@
                   "windowSize": {
                     "type": "String"
                   },
+                  "enabled": {
+                    "type": "String"
+                  },
                   "threshold": {
                     "type": "String"
                   },
                   "severity": {
-                    "type": "String"
-                  },
-                  "enabled": {
                     "type": "String"
                   },
                   "resourceName": {
@@ -248,13 +260,10 @@
                     "type": "String"
                   }
                 },
-                "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
                 "contentVersion": "1.0.0.0",
-                "variables": {},
                 "resources": [
                   {
                     "type": "Microsoft.Insights/metricAlerts",
-                    "name": "[concat(parameters('resourceName'), '-GatewayBandwidthAlert')]",
                     "properties": {
                       "description": "Metric Alert for VPN Gateway Bandwidth Utilization",
                       "parameters": {
@@ -267,47 +276,51 @@
                         "windowSize": {
                           "value": "[parameters('windowSize')]"
                         },
+                        "enabled": {
+                          "value": "[parameters('enabled')]"
+                        },
                         "threshold": {
                           "value": "[parameters('threshold')]"
                         },
                         "severity": {
                           "value": "[parameters('severity')]"
-                        },
-                        "enabled": {
-                          "value": "[parameters('enabled')]"
                         }
                       },
                       "evaluationFrequency": "[parameters('evaluationFrequency')]",
                       "autoMitigate": "[parameters('autoMitigate')]",
                       "windowSize": "[parameters('windowSize')]",
-                      "severity": "[parameters('severity')]",
                       "enabled": "[parameters('enabled')]",
-                      "scopes": [
-                        "[parameters('resourceId')]"
-                      ],
+                      "severity": "[parameters('severity')]",
                       "criteria": {
                         "allOf": [
                           {
                             "threshold": "[parameters('threshold')]",
+                            "timeAggregation": "Average",
+                            "operator": "LessThan",
                             "name": "tunnelaveragebandwidth",
                             "metricNamespace": "microsoft.network/vpngateways",
-                            "metricName": "tunnelaveragebandwidth",
-                            "operator": "LessThan",
-                            "timeAggregation": "Average",
-                            "criterionType": "StaticThresholdCriterion"
+                            "criterionType": "StaticThresholdCriterion",
+                            "metricName": "tunnelaveragebandwidth"
                           }
                         ],
                         "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
-                      }
+                      },
+                      "scopes": [
+                        "[parameters('resourceId')]"
+                      ]
                     },
                     "apiVersion": "2018-03-01",
                     "location": "global",
+                    "name": "[concat(parameters('resourceName'), '-GatewayBandwidthAlert')]",
                     "tags": {
                       "_deployed_by_amba": true
                     }
                   }
-                ]
-              }
+                ],
+                "variables": {},
+                "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+              },
+              "mode": "incremental"
             }
           }
         }

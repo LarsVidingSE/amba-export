@@ -8,10 +8,10 @@
     "metadata": {
       "_deployed_by_amba": "True",
       "category": "Network",
+      "version": "1.2.0",
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "version": "1.1.0",
       "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
     "parameters": {
@@ -60,6 +60,18 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
+      "effect": {
+        "metadata": {
+          "description": "Effect of the policy",
+          "displayName": "Effect"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "deployIfNotExists",
+        "type": "String"
+      },
       "severity": {
         "metadata": {
           "description": "Severity of the Alert",
@@ -95,22 +107,23 @@
         "defaultValue": "90",
         "type": "String"
       },
-      "effect": {
+      "MonitorDisableTagValues": {
         "metadata": {
-          "description": "Effect of the policy",
-          "displayName": "Effect"
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
         },
-        "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
         ],
-        "defaultValue": "deployIfNotExists",
-        "type": "String"
+        "type": "Array"
       },
-      "MonitorDisable": {
+      "MonitorDisableTagName": {
         "metadata": {
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled",
-          "displayName": "Effect"
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
         },
         "defaultValue": "MonitorDisable",
         "type": "String"
@@ -124,8 +137,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -176,7 +189,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-ArpAvailability-threshold-Override_'), field('tags._amba-ArpAvailability-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.threshold"
               }
             ]
@@ -206,7 +219,7 @@
                   "value": "[parameters('enabled')]"
                 },
                 "threshold": {
-                  "value": "[parameters('threshold')]"
+                  "value": "[if(contains(field('tags'), '_amba-ArpAvailability-threshold-Override_'), field('tags._amba-ArpAvailability-threshold-Override_'), parameters('threshold'))]"
                 },
                 "resourceName": {
                   "value": "[field('name')]"
@@ -283,11 +296,11 @@
                           {
                             "threshold": "[parameters('threshold')]",
                             "timeAggregation": "Average",
-                            "operator": "LessThan",
-                            "name": "ArpAvailability",
                             "metricNamespace": "Microsoft.Network/expressRouteCircuits",
                             "criterionType": "StaticThresholdCriterion",
-                            "metricName": "ArpAvailability"
+                            "operator": "LessThan",
+                            "metricName": "ArpAvailability",
+                            "name": "ArpAvailability"
                           }
                         ],
                         "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"

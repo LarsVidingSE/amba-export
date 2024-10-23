@@ -14,37 +14,44 @@
   "assignment": {
     "name": "Deploy-AMBA-SvcHealth",
     "displayName": "Deploy Azure Monitor Baseline Alerts for Service Health",
-    "description": "Initiative to deploy AMBA Service Health alerts to Azure services"
+    "description": "This initiative deploys Azure Monitor Baseline Alerts to monitor Service Health Events such as Service issues, Planned maintenance, Health advisories, Security advisories, and Resource health."
   },
   "metadata": {
     "_deployed_by_amba": true
   },
   "parameters": {
-    "ResHlthUnhealthyAlertState": "true",
-    "SvcHlthIncidentAlertState": "true",
+    "ALZFunctionTriggerUrl": "",
+    "BYOActionGroup": [],
     "serviceHealthIncidentPolicyEffect": "deployIfNotExists",
-    "ALZLogicappResourceId": "",
     "SvcHlthMaintenanceAlertState": "true",
-    "ALZMonitorResourceGroupName": "rg-amba-monitoring-001",
-    "ALZMonitorResourceGroupLocation": "australiaeast",
-    "BYOActionGroup": "",
+    "SvcHlthIncidentAlertState": "true",
     "BYOAlertProcessingRule": "",
-    "ALZWebhookServiceUri": "",
-    "SvcHlthAdvisoryAlertState": "true",
-    "ALZLogicappCallbackUrl": "",
-    "ResHlthUnhealthyPolicyEffect": "deployIfNotExists",
     "serviceHealthMaintenancePolicyEffect": "deployIfNotExists",
-    "ALZMonitorActionGroupEmail": "action@mail.com",
     "serviceHealthSecurityPolicyEffect": "deployIfNotExists",
-    "ALZFunctionResourceId": "",
-    "ALZArmRoleId": "",
-    "ALZEventHubResourceId": "",
-    "svcHlthSecAdvisoryAlertState": "true",
+    "ALZMonitorActionGroupEmail": [],
     "ALZMonitorResourceGroupTags": {
       "Project": "amba-monitoring"
     },
-    "ALZFunctionTriggerUrl": "",
-    "serviceHealthAdvisoryPolicyEffect": "deployIfNotExists"
+    "ALZWebhookServiceUri": [],
+    "ALZEventHubResourceId": [],
+    "ALZMonitorResourceGroupLocation": "eastus",
+    "ALZLogicappCallbackUrl": "",
+    "serviceHealthAdvisoryPolicyEffect": "deployIfNotExists",
+    "svcHlthSecAdvisoryAlertState": "true",
+    "ALZMonitorDisableTagName": "MonitorDisable",
+    "ALZArmRoleId": [],
+    "ALZFunctionResourceId": "",
+    "ALZMonitorDisableTagValues": [
+      "true",
+      "Test",
+      "Dev",
+      "Sandbox"
+    ],
+    "ResHlthUnhealthyAlertState": "true",
+    "SvcHlthAdvisoryAlertState": "true",
+    "ResHlthUnhealthyPolicyEffect": "deployIfNotExists",
+    "ALZLogicappResourceId": "",
+    "ALZMonitorResourceGroupName": "rg-amba-monitoring-001"
   },
   "scope": {
     "amba": [

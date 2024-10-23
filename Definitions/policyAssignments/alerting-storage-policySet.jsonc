@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-assignment-schema.json",
+  "nodeName": "/root",
+  "definitionEntry": {
+    "policySetName": "Alerting-Storage",
+    "displayName": "Deploy Azure Monitor Baseline Alerts for Storage",
+    "nonComplianceMessages": [
+      {
+        "policyDefinitionReferenceId": null,
+        "message": "Alerting must be deployed to Azure services."
+      }
+    ]
+  },
+  "assignment": {
+    "name": "Deploy-AMBA-Storage",
+    "displayName": "Deploy Azure Monitor Baseline Alerts for Storage",
+    "description": "This initiative deploys Azure Monitor Baseline Alerts to monitor Storage Services such as Storage accounts."
+  },
+  "metadata": {
+    "_deployed_by_amba": true
+  },
+  "parameters": {
+    "StorageAccountAvailabilityThreshold": "90",
+    "StorageAccountDeleteAlertState": "true",
+    "ALZMonitorResourceGroupTags": {
+      "Project": "amba-monitoring"
+    },
+    "StorageAccountAvailabilityFrequency": "PT5M",
+    "ALZMonitorResourceGroupLocation": "eastus",
+    "StorageAccountAvailabilityAlertState": "true",
+    "ALZMonitorDisableTagName": "MonitorDisable",
+    "StorageAccountAvailabilityWindowSize": "PT5M",
+    "StorageAccountDeletePolicyEffect": "deployIfNotExists",
+    "ALZMonitorDisableTagValues": [
+      "true",
+      "Test",
+      "Dev",
+      "Sandbox"
+    ],
+    "StorageAccountAvailabilityPolicyEffect": "deployIfNotExists",
+    "StorageAccountAvailabilityAlertSeverity": "1",
+    "ALZMonitorResourceGroupName": "rg-amba-monitoring-001"
+  },
+  "scope": {
+    "amba": [
+      "/providers/Microsoft.Management/managementGroups/amba-landingzones"
+    ]
+  }
+}

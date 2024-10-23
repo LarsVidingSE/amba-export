@@ -6,31 +6,19 @@
     "description": "Policy to audit/deploy Virtual Network DDoS Attack Alert",
     "mode": "All",
     "metadata": {
-      "category": "Network",
       "_deployed_by_amba": "True",
-      "version": "1.1.0",
+      "category": "Network",
+      "version": "1.2.0",
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
       "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
     "parameters": {
-      "effect": {
-        "metadata": {
-          "displayName": "Effect",
-          "description": "Effect of the policy"
-        },
-        "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
-        ],
-        "defaultValue": "deployIfNotExists",
-        "type": "String"
-      },
       "evaluationFrequency": {
         "metadata": {
-          "displayName": "Evaluation Frequency",
-          "description": "Evaluation frequency for the alert"
+          "description": "Evaluation frequency for the alert",
+          "displayName": "Evaluation Frequency"
         },
         "allowedValues": [
           "PT1M",
@@ -44,8 +32,8 @@
       },
       "autoMitigate": {
         "metadata": {
-          "displayName": "Auto Mitigate",
-          "description": "Auto Mitigate for the alert"
+          "description": "Auto Mitigate for the alert",
+          "displayName": "Auto Mitigate"
         },
         "allowedValues": [
           "true",
@@ -56,8 +44,8 @@
       },
       "windowSize": {
         "metadata": {
-          "displayName": "Window Size",
-          "description": "Window size for the alert"
+          "description": "Window size for the alert",
+          "displayName": "Window Size"
         },
         "allowedValues": [
           "PT1M",
@@ -72,22 +60,22 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
-      "enabled": {
+      "effect": {
         "metadata": {
-          "displayName": "Alert State",
-          "description": "Alert state for the alert"
+          "description": "Effect of the policy",
+          "displayName": "Effect"
         },
         "allowedValues": [
-          "true",
-          "false"
+          "deployIfNotExists",
+          "disabled"
         ],
-        "defaultValue": "true",
+        "defaultValue": "deployIfNotExists",
         "type": "String"
       },
       "severity": {
         "metadata": {
-          "displayName": "Severity",
-          "description": "Severity of the Alert"
+          "description": "Severity of the Alert",
+          "displayName": "Severity"
         },
         "allowedValues": [
           "0",
@@ -99,18 +87,43 @@
         "defaultValue": "1",
         "type": "String"
       },
+      "enabled": {
+        "metadata": {
+          "description": "Alert state for the alert",
+          "displayName": "Alert State"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true",
+        "type": "String"
+      },
       "threshold": {
         "metadata": {
-          "displayName": "Threshold",
-          "description": "Threshold for the alert"
+          "description": "Threshold for the alert",
+          "displayName": "Threshold"
         },
         "defaultValue": "0",
         "type": "String"
       },
-      "MonitorDisable": {
+      "MonitorDisableTagValues": {
         "metadata": {
-          "displayName": "Effect",
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled"
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
+      "MonitorDisableTagName": {
+        "metadata": {
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
         },
         "defaultValue": "MonitorDisable",
         "type": "String"
@@ -124,8 +137,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -176,7 +189,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-ifunderddosattack-threshold-Override_'), field('tags._amba-ifunderddosattack-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.threshold"
               }
             ]
@@ -199,26 +212,25 @@
                 "windowSize": {
                   "value": "[parameters('windowSize')]"
                 },
-                "enabled": {
-                  "value": "[parameters('enabled')]"
-                },
                 "severity": {
                   "value": "[parameters('severity')]"
                 },
+                "enabled": {
+                  "value": "[parameters('enabled')]"
+                },
                 "threshold": {
-                  "value": "[parameters('threshold')]"
+                  "value": "[if(contains(field('tags'), '_amba-ifunderddosattack-threshold-Override_'), field('tags._amba-ifunderddosattack-threshold-Override_'), parameters('threshold'))]"
                 },
                 "resourceName": {
                   "value": "[field('name')]"
                 }
               },
-              "mode": "incremental",
               "template": {
                 "parameters": {
                   "resourceId": {
                     "metadata": {
-                      "displayName": "resourceId",
-                      "description": "Resource ID of the resource emitting the metric that will be used for the comparison"
+                      "description": "Resource ID of the resource emitting the metric that will be used for the comparison",
+                      "displayName": "resourceId"
                     },
                     "type": "String"
                   },
@@ -231,10 +243,10 @@
                   "windowSize": {
                     "type": "String"
                   },
-                  "enabled": {
+                  "severity": {
                     "type": "String"
                   },
-                  "severity": {
+                  "enabled": {
                     "type": "String"
                   },
                   "threshold": {
@@ -242,14 +254,13 @@
                   },
                   "resourceName": {
                     "metadata": {
-                      "displayName": "resourceName",
-                      "description": "Name of the resource"
+                      "description": "Name of the resource",
+                      "displayName": "resourceName"
                     },
                     "type": "String"
                   }
                 },
                 "contentVersion": "1.0.0.0",
-                "variables": {},
                 "resources": [
                   {
                     "type": "Microsoft.Insights/metricAlerts",
@@ -265,11 +276,11 @@
                         "windowSize": {
                           "value": "[parameters('windowSize')]"
                         },
-                        "enabled": {
-                          "value": "[parameters('enabled')]"
-                        },
                         "severity": {
                           "value": "[parameters('severity')]"
+                        },
+                        "enabled": {
+                          "value": "[parameters('enabled')]"
                         },
                         "threshold": {
                           "value": "[parameters('threshold')]"
@@ -278,18 +289,18 @@
                       "evaluationFrequency": "[parameters('evaluationFrequency')]",
                       "autoMitigate": "[parameters('autoMitigate')]",
                       "windowSize": "[parameters('windowSize')]",
-                      "enabled": "[parameters('enabled')]",
                       "severity": "[parameters('severity')]",
+                      "enabled": "[parameters('enabled')]",
                       "criteria": {
                         "allOf": [
                           {
                             "threshold": "[parameters('threshold')]",
                             "timeAggregation": "Maximum",
-                            "operator": "GreaterThan",
-                            "name": "ifunderddosattack",
                             "metricNamespace": "Microsoft.Network/virtualNetworks",
                             "criterionType": "StaticThresholdCriterion",
-                            "metricName": "ifunderddosattack"
+                            "operator": "GreaterThan",
+                            "metricName": "ifunderddosattack",
+                            "name": "ifunderddosattack"
                           }
                         ],
                         "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
@@ -299,15 +310,17 @@
                       ]
                     },
                     "apiVersion": "2018-03-01",
-                    "location": "global",
                     "name": "[concat(parameters('resourceName'), '-DDOSAttackAlert')]",
+                    "location": "global",
                     "tags": {
                       "_deployed_by_amba": true
                     }
                   }
                 ],
+                "variables": {},
                 "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              }
+              },
+              "mode": "incremental"
             }
           }
         }

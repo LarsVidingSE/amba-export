@@ -39,6 +39,19 @@
         "defaultValue": "true",
         "type": "String"
       },
+      "MonitorDisableTagValues": {
+        "metadata": {
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
       "windowSize": {
         "metadata": {
           "description": "Window size for the alert",
@@ -57,16 +70,24 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
-      "effect": {
+      "MonitorDisableTagName": {
         "metadata": {
-          "description": "Effect of the policy",
-          "displayName": "Effect"
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
+        },
+        "defaultValue": "MonitorDisable",
+        "type": "String"
+      },
+      "enabled": {
+        "metadata": {
+          "description": "Alert state for the alert",
+          "displayName": "Alert State"
         },
         "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
+          "true",
+          "false"
         ],
-        "defaultValue": "disabled",
+        "defaultValue": "true",
         "type": "String"
       },
       "severity": {
@@ -84,18 +105,6 @@
         "defaultValue": "1",
         "type": "String"
       },
-      "enabled": {
-        "metadata": {
-          "description": "Alert state for the alert",
-          "displayName": "Alert State"
-        },
-        "allowedValues": [
-          "true",
-          "false"
-        ],
-        "defaultValue": "true",
-        "type": "String"
-      },
       "threshold": {
         "metadata": {
           "description": "Threshold for the alert",
@@ -104,12 +113,16 @@
         "defaultValue": "0",
         "type": "String"
       },
-      "MonitorDisable": {
+      "effect": {
         "metadata": {
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled",
+          "description": "Effect of the policy",
           "displayName": "Effect"
         },
-        "defaultValue": "MonitorDisable",
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "disabled",
         "type": "String"
       }
     },
@@ -121,8 +134,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -177,7 +190,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-RxLightLevel-High-threshold-Override_'), field('tags._amba-RxLightLevel-High-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.threshold"
               }
             ]
@@ -200,20 +213,19 @@
                 "windowSize": {
                   "value": "[parameters('windowSize')]"
                 },
-                "severity": {
-                  "value": "[parameters('severity')]"
-                },
                 "enabled": {
                   "value": "[parameters('enabled')]"
                 },
-                "resourceName": {
-                  "value": "[field('name')]"
+                "severity": {
+                  "value": "[parameters('severity')]"
                 },
                 "threshold": {
-                  "value": "[parameters('threshold')]"
+                  "value": "[if(contains(field('tags'), '_amba-RxLightLevel-High-threshold-Override_'), field('tags._amba-RxLightLevel-High-threshold-Override_'), parameters('threshold'))]"
+                },
+                "resourceName": {
+                  "value": "[field('name')]"
                 }
               },
-              "mode": "incremental",
               "template": {
                 "parameters": {
                   "resourceId": {
@@ -232,10 +244,13 @@
                   "windowSize": {
                     "type": "String"
                   },
+                  "enabled": {
+                    "type": "String"
+                  },
                   "severity": {
                     "type": "String"
                   },
-                  "enabled": {
+                  "threshold": {
                     "type": "String"
                   },
                   "resourceName": {
@@ -243,9 +258,6 @@
                       "description": "Name of the resource",
                       "displayName": "resourceName"
                     },
-                    "type": "String"
-                  },
-                  "threshold": {
                     "type": "String"
                   }
                 },
@@ -265,11 +277,11 @@
                         "windowSize": {
                           "value": "[parameters('windowSize')]"
                         },
-                        "severity": {
-                          "value": "[parameters('severity')]"
-                        },
                         "enabled": {
                           "value": "[parameters('enabled')]"
+                        },
+                        "severity": {
+                          "value": "[parameters('severity')]"
                         },
                         "threshold": {
                           "value": "[parameters('threshold')]"
@@ -278,18 +290,18 @@
                       "evaluationFrequency": "[parameters('evaluationFrequency')]",
                       "autoMitigate": "[parameters('autoMitigate')]",
                       "windowSize": "[parameters('windowSize')]",
-                      "severity": "[parameters('severity')]",
                       "enabled": "[parameters('enabled')]",
+                      "severity": "[parameters('severity')]",
                       "criteria": {
                         "allOf": [
                           {
                             "threshold": "[parameters('threshold')]",
                             "timeAggregation": "Average",
-                            "metricNamespace": "Microsoft.Network/expressRoutePorts",
-                            "metricName": "RxLightLevel",
-                            "criterionType": "StaticThresholdCriterion",
                             "operator": "GreaterThan",
-                            "name": "RxLightLevel"
+                            "name": "RxLightLevel",
+                            "metricNamespace": "Microsoft.Network/expressRoutePorts",
+                            "criterionType": "StaticThresholdCriterion",
+                            "metricName": "RxLightLevel"
                           }
                         ],
                         "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
@@ -298,9 +310,9 @@
                         "[parameters('resourceId')]"
                       ]
                     },
-                    "location": "global",
-                    "name": "[concat(parameters('resourceName'), '-DirectERRxLightLevelHighAlert')]",
                     "apiVersion": "2018-03-01",
+                    "name": "[concat(parameters('resourceName'), '-DirectERRxLightLevelHighAlert')]",
+                    "location": "global",
                     "tags": {
                       "_deployed_by_amba": true
                     }
@@ -308,7 +320,8 @@
                 ],
                 "variables": {},
                 "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              }
+              },
+              "mode": "incremental"
             }
           }
         }

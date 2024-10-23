@@ -10,7 +10,7 @@
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "version": "1.1.0",
+      "version": "1.2.0",
       "category": "Automation",
       "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
@@ -30,6 +30,31 @@
         "defaultValue": "PT1M",
         "type": "String"
       },
+      "enabled": {
+        "metadata": {
+          "description": "Alert state for the alert",
+          "displayName": "Alert State"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true",
+        "type": "String"
+      },
+      "MonitorDisableTagValues": {
+        "metadata": {
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
       "effect": {
         "metadata": {
           "description": "Effect of the policy",
@@ -42,6 +67,14 @@
         "defaultValue": "deployIfNotExists",
         "type": "String"
       },
+      "MonitorDisableTagName": {
+        "metadata": {
+          "description": "Tag name to disable monitoring. Set to true if monitoring should be disabled",
+          "displayName": "ALZ Monitoring disabled tag name"
+        },
+        "defaultValue": "MonitorDisable",
+        "type": "String"
+      },
       "autoMitigate": {
         "metadata": {
           "description": "Auto Mitigate for the alert",
@@ -52,6 +85,21 @@
           "false"
         ],
         "defaultValue": "true",
+        "type": "String"
+      },
+      "severity": {
+        "metadata": {
+          "description": "Severity of the Alert",
+          "displayName": "Severity"
+        },
+        "allowedValues": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "defaultValue": "2",
         "type": "String"
       },
       "windowSize": {
@@ -72,47 +120,12 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
-      "enabled": {
-        "metadata": {
-          "description": "Alert state for the alert",
-          "displayName": "Alert State"
-        },
-        "allowedValues": [
-          "true",
-          "false"
-        ],
-        "defaultValue": "true",
-        "type": "String"
-      },
       "threshold": {
         "metadata": {
           "description": "Threshold for the alert",
           "displayName": "Threshold"
         },
         "defaultValue": "0",
-        "type": "String"
-      },
-      "severity": {
-        "metadata": {
-          "description": "Severity of the Alert",
-          "displayName": "Severity"
-        },
-        "allowedValues": [
-          "0",
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "defaultValue": "2",
-        "type": "String"
-      },
-      "MonitorDisable": {
-        "metadata": {
-          "description": "Tag name to disable monitoring on resource. Set to true if monitoring should be disabled",
-          "displayName": "Effect"
-        },
-        "defaultValue": "MonitorDisable",
         "type": "String"
       }
     },
@@ -124,8 +137,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -176,7 +189,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-TotalJob-threshold-override_'), field('tags._amba-TotalJob-threshold-override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].threshold"
               }
             ]
@@ -193,25 +206,26 @@
                 "evaluationFrequency": {
                   "value": "[parameters('evaluationFrequency')]"
                 },
+                "enabled": {
+                  "value": "[parameters('enabled')]"
+                },
                 "autoMitigate": {
                   "value": "[parameters('autoMitigate')]"
+                },
+                "severity": {
+                  "value": "[parameters('severity')]"
                 },
                 "windowSize": {
                   "value": "[parameters('windowSize')]"
                 },
-                "enabled": {
-                  "value": "[parameters('enabled')]"
-                },
                 "threshold": {
-                  "value": "[parameters('threshold')]"
-                },
-                "severity": {
-                  "value": "[parameters('severity')]"
+                  "value": "[if(contains(field('tags'), '_amba-TotalJob-threshold-override_'), field('tags._amba-TotalJob-threshold-override_'), parameters('threshold'))]"
                 },
                 "resourceName": {
                   "value": "[field('name')]"
                 }
               },
+              "mode": "incremental",
               "template": {
                 "parameters": {
                   "resourceId": {
@@ -224,19 +238,19 @@
                   "evaluationFrequency": {
                     "type": "String"
                   },
+                  "enabled": {
+                    "type": "String"
+                  },
                   "autoMitigate": {
+                    "type": "String"
+                  },
+                  "severity": {
                     "type": "String"
                   },
                   "windowSize": {
                     "type": "String"
                   },
-                  "enabled": {
-                    "type": "String"
-                  },
                   "threshold": {
-                    "type": "String"
-                  },
-                  "severity": {
                     "type": "String"
                   },
                   "resourceName": {
@@ -258,41 +272,44 @@
                         "evaluationFrequency": {
                           "value": "[parameters('evaluationFrequency')]"
                         },
+                        "enabled": {
+                          "value": "[parameters('enabled')]"
+                        },
                         "autoMitigate": {
                           "value": "[parameters('autoMitigate')]"
+                        },
+                        "severity": {
+                          "value": "[parameters('severity')]"
                         },
                         "windowSize": {
                           "value": "[parameters('windowSize')]"
                         },
-                        "enabled": {
-                          "value": "[parameters('enabled')]"
-                        },
                         "threshold": {
                           "value": "[parameters('threshold')]"
-                        },
-                        "severity": {
-                          "value": "[parameters('severity')]"
                         }
                       },
                       "evaluationFrequency": "[parameters('evaluationFrequency')]",
-                      "autoMitigate": "[parameters('autoMitigate')]",
-                      "windowSize": "[parameters('windowSize')]",
                       "enabled": "[parameters('enabled')]",
+                      "autoMitigate": "[parameters('autoMitigate')]",
                       "severity": "[parameters('severity')]",
+                      "windowSize": "[parameters('windowSize')]",
+                      "scopes": [
+                        "[parameters('resourceId')]"
+                      ],
                       "criteria": {
                         "allOf": [
                           {
                             "threshold": "[parameters('threshold')]",
+                            "name": "TotalJob",
                             "timeAggregation": "Average",
                             "operator": "GreaterThan",
-                            "name": "TotalJob",
                             "metricNamespace": "Microsoft.Automation/automationAccounts",
                             "criterionType": "StaticThresholdCriterion",
                             "metricName": "TotalJob",
                             "dimensions": [
                               {
-                                "operator": "Exclude",
                                 "name": "Status",
+                                "operator": "Exclude",
                                 "values": [
                                   "Completed"
                                 ]
@@ -301,13 +318,10 @@
                           }
                         ],
                         "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
-                      },
-                      "scopes": [
-                        "[parameters('resourceId')]"
-                      ]
+                      }
                     },
-                    "apiVersion": "2018-03-01",
                     "location": "global",
+                    "apiVersion": "2018-03-01",
                     "name": "[concat(parameters('resourceName'), '-TotalJob')]",
                     "tags": {
                       "_deployed_by_amba": true
@@ -315,8 +329,7 @@
                   }
                 ],
                 "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              },
-              "mode": "incremental"
+              }
             }
           }
         }

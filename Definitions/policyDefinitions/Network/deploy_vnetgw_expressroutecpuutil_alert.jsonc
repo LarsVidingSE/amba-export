@@ -7,10 +7,10 @@
     "mode": "All",
     "metadata": {
       "_deployed_by_amba": "True",
+      "version": "1.2.1",
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "version": "1.1.0",
       "category": "Network",
       "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
@@ -30,18 +30,6 @@
         "defaultValue": "PT1M",
         "type": "String"
       },
-      "effect": {
-        "metadata": {
-          "description": "Effect of the policy",
-          "displayName": "Effect"
-        },
-        "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
-        ],
-        "defaultValue": "deployIfNotExists",
-        "type": "String"
-      },
       "autoMitigate": {
         "metadata": {
           "description": "Auto Mitigate for the alert",
@@ -53,6 +41,19 @@
         ],
         "defaultValue": "true",
         "type": "String"
+      },
+      "MonitorDisableTagValues": {
+        "metadata": {
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
       },
       "windowSize": {
         "metadata": {
@@ -72,6 +73,14 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
+      "MonitorDisableTagName": {
+        "metadata": {
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
+        },
+        "defaultValue": "MonitorDisable",
+        "type": "String"
+      },
       "enabled": {
         "metadata": {
           "description": "Alert state for the alert",
@@ -82,14 +91,6 @@
           "false"
         ],
         "defaultValue": "true",
-        "type": "String"
-      },
-      "threshold": {
-        "metadata": {
-          "description": "Threshold for the alert",
-          "displayName": "Threshold"
-        },
-        "defaultValue": "80",
         "type": "String"
       },
       "severity": {
@@ -107,12 +108,24 @@
         "defaultValue": "1",
         "type": "String"
       },
-      "MonitorDisable": {
+      "threshold": {
         "metadata": {
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled",
+          "description": "Threshold for the alert",
+          "displayName": "Threshold"
+        },
+        "defaultValue": "80",
+        "type": "String"
+      },
+      "effect": {
+        "metadata": {
+          "description": "Effect of the policy",
           "displayName": "Effect"
         },
-        "defaultValue": "MonitorDisable",
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "deployIfNotExists",
         "type": "String"
       }
     },
@@ -128,8 +141,8 @@
             "field": "Microsoft.Network/virtualNetworkGateways/gatewayType"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -180,7 +193,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-ExpressRouteGatewayCpuUtilization-threshold-Override_'), field('tags._amba-ExpressRouteGatewayCpuUtilization-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].threshold"
               }
             ]
@@ -206,11 +219,11 @@
                 "enabled": {
                   "value": "[parameters('enabled')]"
                 },
-                "threshold": {
-                  "value": "[parameters('threshold')]"
-                },
                 "severity": {
                   "value": "[parameters('severity')]"
+                },
+                "threshold": {
+                  "value": "[if(contains(field('tags'), '_amba-ExpressRouteGatewayCpuUtilization-threshold-Override_'), field('tags._amba-ExpressRouteGatewayCpuUtilization-threshold-Override_'), parameters('threshold'))]"
                 },
                 "resourceName": {
                   "value": "[field('name')]"
@@ -237,6 +250,9 @@
                   "enabled": {
                     "type": "String"
                   },
+                  "severity": {
+                    "type": "String"
+                  },
                   "threshold": {
                     "type": "String"
                   },
@@ -249,7 +265,6 @@
                   }
                 },
                 "contentVersion": "1.0.0.0",
-                "variables": {},
                 "resources": [
                   {
                     "type": "Microsoft.Insights/metricAlerts",
@@ -268,11 +283,11 @@
                         "enabled": {
                           "value": "[parameters('enabled')]"
                         },
-                        "threshold": {
-                          "value": "[parameters('threshold')]"
-                        },
                         "severity": {
                           "value": "[parameters('severity')]"
+                        },
+                        "threshold": {
+                          "value": "[parameters('threshold')]"
                         }
                       },
                       "evaluationFrequency": "[parameters('evaluationFrequency')]",
@@ -299,13 +314,14 @@
                       ]
                     },
                     "apiVersion": "2018-03-01",
-                    "location": "global",
                     "name": "[concat(parameters('resourceName'), '-GatewayERCPUAlert')]",
+                    "location": "global",
                     "tags": {
                       "_deployed_by_amba": true
                     }
                   }
                 ],
+                "variables": {},
                 "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
               },
               "mode": "incremental"

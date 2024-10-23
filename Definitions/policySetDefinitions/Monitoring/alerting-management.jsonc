@@ -5,55 +5,29 @@
     "displayName": "Deploy Azure Monitor Baseline Alerts for Management",
     "description": "Initiative to deploy AMBA alerts relevant to the ALZ Management management group",
     "metadata": {
-      "version": "1.0.3",
       "category": "Monitoring",
-      "source": "https://github.com/Azure/azure-monitor-baseline-alerts/",
+      "version": "1.3.0",
+      "_deployed_by_amba": true,
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "_deployed_by_amba": true
+      "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
     "parameters": {
-      "ALZMonitorResourceGroupName": {
+      "AATotalJobAlertEvaluationFrequency": {
         "metadata": {
-          "displayName": "ALZ Monitoring Resource Group Name",
-          "description": "Name of the resource group to deploy the ALZ monitoring resources to"
-        },
-        "defaultValue": "ALZ-Monitoring-RG",
-        "type": "String"
-      },
-      "ALZMonitorResourceGroupTags": {
-        "metadata": {
-          "displayName": "ALZ Monitoring Resource Group Tags",
-          "description": "Tags to apply to the resource group"
-        },
-        "defaultValue": {
-          "_deployed_by_alz_monitor": true
-        },
-        "type": "Object"
-      },
-      "ALZMonitorResourceGroupLocation": {
-        "metadata": {
-          "displayName": "ALZ Monitoring Resource Group Location",
-          "description": "Location of the resource group"
-        },
-        "defaultValue": "centralus",
-        "type": "String"
-      },
-      "AATotalJobAlertSeverity": {
-        "metadata": {
-          "displayName": "AA Total Job Alert Severity",
-          "description": "Severity of the alert"
+          "displayName": "AA Total Job Alert Evaluation Frequency",
+          "description": "Evaluation frequency for the alert"
         },
         "allowedValues": [
-          "0",
-          "1",
-          "2",
-          "3",
-          "4"
+          "PT1M",
+          "PT5M",
+          "PT15M",
+          "PT30M",
+          "PT1H"
         ],
-        "defaultValue": "2",
-        "type": "String"
+        "defaultValue": "PT1M",
+        "type": "string"
       },
       "AATotalJobAlertWindowSize": {
         "metadata": {
@@ -73,10 +47,69 @@
         "defaultValue": "PT5M",
         "type": "string"
       },
-      "AATotalJobAlertPolicyEffect": {
+      "AATotalJobAlertSeverity": {
         "metadata": {
-          "displayName": "AA Total Job Alert Policy Effect",
-          "description": "Policy effect for the alert"
+          "displayName": "AA Total Job Alert Severity",
+          "description": "Severity of the alert"
+        },
+        "allowedValues": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "defaultValue": "2",
+        "type": "String"
+      },
+      "BYOUserAssignedManagedIdentityResourceId": {
+        "metadata": {
+          "displayName": "Customer defined User Assigned managed Identity resource Id.",
+          "description": "The resource Id of the user assigned managed identity provided by the customer."
+        },
+        "defaultValue": "",
+        "type": "string"
+      },
+      "ALZManagementSubscriptionId": {
+        "metadata": {
+          "description": "The subscription ID of the management subscription where the user assigned managed identity will be created."
+        },
+        "defaultValue": "",
+        "type": "string"
+      },
+      "ALZMonitorDisableTagValues": {
+        "metadata": {
+          "displayName": "ALZ Monitoring disabled tag values(s)",
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled."
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
+      "ALZMonitorDisableTagName": {
+        "metadata": {
+          "displayName": "ALZ Monitoring disabled tag name",
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled."
+        },
+        "defaultValue": "MonitorDisable",
+        "type": "String"
+      },
+      "LAWDailyCapLimitAlertState": {
+        "metadata": {
+          "displayName": "ALog Analytics Workspace Daily Cap Limit Reached Alert State",
+          "description": "Alert state for the alert"
+        },
+        "defaultValue": "true",
+        "type": "string"
+      },
+      "LAWDailyCapLimitPolicyEffect": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Policy Effect",
+          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
         },
         "allowedValues": [
           "deployIfNotExists",
@@ -85,20 +118,223 @@
         "defaultValue": "deployIfNotExists",
         "type": "string"
       },
-      "AATotalJobAlertAlertState": {
+      "LAWDailyCapLimitEvaluationPeriods": {
         "metadata": {
-          "displayName": "AA Total Job Alert State",
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Evaluation Periods",
+          "description": "The number of aggregated lookback points."
+        },
+        "defaultValue": "1",
+        "type": "String"
+      },
+      "LAWDailyCapLimitFailingPeriods": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Failing Periods",
+          "description": "Number of failing periods before alert is fired"
+        },
+        "defaultValue": "1",
+        "type": "String"
+      },
+      "ALZMonitorResourceGroupLocation": {
+        "metadata": {
+          "displayName": "ALZ Monitoring Resource Group Location",
+          "description": "Location of the resource group"
+        },
+        "defaultValue": "centralus",
+        "type": "String"
+      },
+      "ALZMonitorResourceGroupTags": {
+        "metadata": {
+          "displayName": "ALZ Monitoring Resource Group Tags",
+          "description": "Tags to apply to the resource group"
+        },
+        "defaultValue": {
+          "_deployed_by_alz_monitor": true
+        },
+        "type": "Object"
+      },
+      "ALZMonitorResourceGroupName": {
+        "metadata": {
+          "displayName": "ALZ Monitoring Resource Group Name",
+          "description": "Name of the resource group to deploy the ALZ monitoring resources to"
+        },
+        "defaultValue": "ALZ-Monitoring-RG",
+        "type": "String"
+      },
+      "LAWDailyCapLimitThreshold": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Threshold",
+          "description": "Threshold for the alert"
+        },
+        "defaultValue": "0",
+        "type": "String"
+      },
+      "LAWDailyCapLimitAutoMitigate": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Auto Mitigate",
+          "description": "Auto Mitigate for the alert"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true",
+        "type": "String"
+      },
+      "LAWDailyCapLimitEvaluationFrequency": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Evaluation Frequency",
+          "description": "Evaluation frequency for the alert"
+        },
+        "allowedValues": [
+          "PT5M",
+          "PT10M",
+          "PT15M",
+          "PT30M",
+          "PT45M",
+          "PT1H",
+          "PT2H",
+          "PT3H",
+          "PT4H",
+          "PT5H",
+          "PT6H",
+          "P1D"
+        ],
+        "defaultValue": "PT1H",
+        "type": "String"
+      },
+      "LAWDailyCapLimitWindowSize": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Window Size",
+          "description": "Window size for the alert"
+        },
+        "allowedValues": [
+          "PT1M",
+          "PT5M",
+          "PT10M",
+          "PT15M",
+          "PT30M",
+          "PT45M",
+          "PT1H",
+          "PT2H",
+          "PT3H",
+          "PT4H",
+          "PT5H",
+          "PT6H",
+          "P1D"
+        ],
+        "defaultValue": "P1D",
+        "type": "String"
+      },
+      "LAWDailyCapLimitTimeAggregation": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert TimeAggregation"
+        },
+        "allowedValues": [
+          "Count"
+        ],
+        "defaultValue": "Count",
+        "type": "String"
+      },
+      "LAWDailyCapLimitOperator": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Operator"
+        },
+        "allowedValues": [
+          "GreaterThan",
+          "GreaterThanOrEqual"
+        ],
+        "defaultValue": "GreaterThan",
+        "type": "String"
+      },
+      "ALZUserAssignedManagedIdentityName": {
+        "metadata": {
+          "displayName": "Name of the user assigned managed identity to be created.",
+          "description": "The name of the user assigned managed identity to be created for monitoring purpose."
+        },
+        "defaultValue": "id-AMBA-ARG-Reader-001",
+        "type": "string"
+      },
+      "LAWDailyCapLimitSeverity": {
+        "metadata": {
+          "displayName": "Log Analytics Workspace Daily Cap Limit Reached Alert Severity",
+          "description": "Severity of the Alert"
+        },
+        "allowedValues": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "defaultValue": "2",
+        "type": "String"
+      },
+      "activityLAWKeyRegenAlertState": {
+        "metadata": {
+          "displayName": "Activity Log Alert Key Regen Alert State",
           "description": "Alert state for the alert"
         },
         "defaultValue": "true",
         "type": "string"
       },
-      "AATotalJobAlertThreshold": {
+      "activityLAWKeyRegenPolicyEffect": {
         "metadata": {
-          "displayName": "AA Total Job Alert Threshold",
+          "displayName": "LAW Key Regen Alert Policy Effect",
+          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "deployIfNotExists",
+        "type": "string"
+      },
+      "activityLAWDeleteAlertState": {
+        "metadata": {
+          "displayName": "Activity Log Alert Delete Alert State",
+          "description": "Alert state for the alert"
+        },
+        "defaultValue": "true",
+        "type": "string"
+      },
+      "activityLAWDeletePolicyEffect": {
+        "metadata": {
+          "displayName": "Activity Log Alert Delete Policy Effect",
+          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "deployIfNotExists",
+        "type": "string"
+      },
+      "StorageAccountDeleteAlertState": {
+        "metadata": {
+          "displayName": "Storage Account Delete Alert State",
+          "description": "Alert state for the alert"
+        },
+        "defaultValue": "true",
+        "type": "string"
+      },
+      "StorageAccountDeletePolicyEffect": {
+        "metadata": {
+          "displayName": "Storage Account Delete Alert Policy Effect",
+          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "deployIfNotExists",
+        "type": "string"
+      },
+      "StorageAccountAvailabilityThreshold": {
+        "metadata": {
+          "displayName": "Storage Account Availability Alert Threshold",
           "description": "Threshold for the alert"
         },
-        "defaultValue": "20",
+        "defaultValue": "90",
         "type": "string"
       },
       "RVBackupHealthMonitorPolicyEffect": {
@@ -114,20 +350,40 @@
         "defaultValue": "modify",
         "type": "string"
       },
-      "StorageAccountAvailabilityAlertSeverity": {
+      "StorageAccountAvailabilityAlertState": {
         "metadata": {
-          "displayName": "Storage Account Availability Alert Severity",
-          "description": "Severity of the alert"
+          "displayName": "Storage Account Availability Alert State",
+          "description": "Alert state for the alert"
+        },
+        "defaultValue": "true",
+        "type": "string"
+      },
+      "StorageAccountAvailabilityPolicyEffect": {
+        "metadata": {
+          "displayName": "Storage Account Availability Alert Policy Effect",
+          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
         },
         "allowedValues": [
-          "0",
-          "1",
-          "2",
-          "3",
-          "4"
+          "deployIfNotExists",
+          "disabled"
         ],
-        "defaultValue": "1",
-        "type": "String"
+        "defaultValue": "deployIfNotExists",
+        "type": "string"
+      },
+      "StorageAccountAvailabilityFrequency": {
+        "metadata": {
+          "displayName": "Storage Account Availability Alert Evaluation Frequency",
+          "description": "Evaluation frequency for the alert"
+        },
+        "allowedValues": [
+          "PT1M",
+          "PT5M",
+          "PT15M",
+          "PT30M",
+          "PT1H"
+        ],
+        "defaultValue": "PT5M",
+        "type": "string"
       },
       "StorageAccountAvailabilityWindowSize": {
         "metadata": {
@@ -147,98 +403,60 @@
         "defaultValue": "PT5M",
         "type": "string"
       },
-      "StorageAccountAvailabilityFrequency": {
+      "StorageAccountAvailabilityAlertSeverity": {
         "metadata": {
-          "displayName": "Storage Account Availability Alert Evaluation Frequency",
-          "description": "Evaluation frequency for the alert"
+          "displayName": "Storage Account Availability Alert Severity",
+          "description": "Severity of the alert"
         },
         "allowedValues": [
-          "PT1M",
-          "PT5M",
-          "PT15M",
-          "PT30M",
-          "PT1H"
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
         ],
-        "defaultValue": "PT5M",
-        "type": "string"
+        "defaultValue": "1",
+        "type": "String"
       },
-      "StorageAccountAvailabilityPolicyEffect": {
+      "RVASRHealthMonitorPolicyEffect": {
         "metadata": {
-          "displayName": "Storage Account Availability Alert Policy Effect",
-          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
+          "displayName": "Recovery Vault ASR Health Monitor Policy Effect",
+          "description": "Policy effect for the alert, modify will modify the alert if it exists, or audit if it does not exist"
         },
         "allowedValues": [
-          "deployIfNotExists",
+          "modify",
+          "audit",
           "disabled"
         ],
-        "defaultValue": "deployIfNotExists",
+        "defaultValue": "modify",
         "type": "string"
       },
-      "StorageAccountAvailabilityAlertState": {
+      "AATotalJobAlertThreshold": {
         "metadata": {
-          "displayName": "Storage Account Availability Alert State",
-          "description": "Alert state for the alert"
-        },
-        "defaultValue": "true",
-        "type": "string"
-      },
-      "StorageAccountAvailabilityThreshold": {
-        "metadata": {
-          "displayName": "Storage Account Availability Alert Threshold",
+          "displayName": "AA Total Job Alert Threshold",
           "description": "Threshold for the alert"
         },
-        "defaultValue": "90",
+        "defaultValue": "20",
         "type": "string"
       },
-      "StorageAccountDeletePolicyEffect": {
+      "AATotalJobAlertAlertState": {
         "metadata": {
-          "displayName": "Storage Account Delete Alert Policy Effect",
-          "description": "Policy effect for the alert, deployIfNotExists will create the alert if it does not exist, disabled will not create the alert"
+          "displayName": "AA Total Job Alert State",
+          "description": "Alert state for the alert"
+        },
+        "defaultValue": "true",
+        "type": "string"
+      },
+      "AATotalJobAlertPolicyEffect": {
+        "metadata": {
+          "displayName": "AA Total Job Alert Policy Effect",
+          "description": "Policy effect for the alert"
         },
         "allowedValues": [
           "deployIfNotExists",
           "disabled"
         ],
         "defaultValue": "deployIfNotExists",
-        "type": "string"
-      },
-      "StorageAccountDeleteAlertState": {
-        "metadata": {
-          "displayName": "Storage Account Delete Alert State",
-          "description": "Alert state for the alert"
-        },
-        "defaultValue": "true",
-        "type": "string"
-      },
-      "activityLAWDeleteAlertState": {
-        "metadata": {
-          "displayName": "Activity Log Alert Delete Alert State",
-          "description": "Alert state for the alert"
-        },
-        "defaultValue": "true",
-        "type": "string"
-      },
-      "activityLAWKeyRegenAlertState": {
-        "metadata": {
-          "displayName": "Activity Log Alert Key Regen Alert State",
-          "description": "Alert state for the alert"
-        },
-        "defaultValue": "true",
-        "type": "string"
-      },
-      "AATotalJobAlertEvaluationFrequency": {
-        "metadata": {
-          "displayName": "AA Total Job Alert Evaluation Frequency",
-          "description": "Evaluation frequency for the alert"
-        },
-        "allowedValues": [
-          "PT1M",
-          "PT5M",
-          "PT15M",
-          "PT30M",
-          "PT1H"
-        ],
-        "defaultValue": "PT1M",
         "type": "string"
       }
     },
@@ -247,14 +465,23 @@
         "policyDefinitionReferenceId": "ALZ_activityLAWDelete",
         "policyDefinitionName": "Deploy_activitylog_LAWorkspace_Delete",
         "parameters": {
+          "effect": {
+            "value": "[parameters('activityLAWDeletePolicyEffect')]"
+          },
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
+          },
           "alertResourceGroupLocation": {
             "value": "[parameters('ALZMonitorResourceGroupLocation')]"
           },
-          "alertResourceGroupName": {
-            "value": "[parameters('ALZMonitorResourceGroupName')]"
-          },
           "alertResourceGroupTags": {
             "value": "[parameters('ALZMonitorResourceGroupTags')]"
+          },
+          "alertResourceGroupName": {
+            "value": "[parameters('ALZMonitorResourceGroupName')]"
           },
           "enabled": {
             "value": "[parameters('activityLAWDeleteAlertState')]"
@@ -265,17 +492,74 @@
         "policyDefinitionReferenceId": "ALZ_activityLAWKeyRegen",
         "policyDefinitionName": "Deploy_activitylog_LAWorkspace_KeyRegen",
         "parameters": {
+          "effect": {
+            "value": "[parameters('activityLAWKeyRegenPolicyEffect')]"
+          },
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
+          },
           "alertResourceGroupLocation": {
             "value": "[parameters('ALZMonitorResourceGroupLocation')]"
-          },
-          "alertResourceGroupName": {
-            "value": "[parameters('ALZMonitorResourceGroupName')]"
           },
           "alertResourceGroupTags": {
             "value": "[parameters('ALZMonitorResourceGroupTags')]"
           },
+          "alertResourceGroupName": {
+            "value": "[parameters('ALZMonitorResourceGroupName')]"
+          },
           "enabled": {
             "value": "[parameters('activityLAWKeyRegenAlertState')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "ALZ_LAWorkspaceDailyCapLimitReached",
+        "policyDefinitionName": "Deploy_LAWorkspace_DailyCapLimitReached_Alert",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('LAWDailyCapLimitPolicyEffect')]"
+          },
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
+          },
+          "evaluationFrequency": {
+            "value": "[parameters('LAWDailyCapLimitEvaluationFrequency')]"
+          },
+          "enabled": {
+            "value": "[parameters('LAWDailyCapLimitAlertState')]"
+          },
+          "windowSize": {
+            "value": "[parameters('LAWDailyCapLimitWindowSize')]"
+          },
+          "threshold": {
+            "value": "[parameters('LAWDailyCapLimitThreshold')]"
+          },
+          "severity": {
+            "value": "[parameters('LAWDailyCapLimitSeverity')]"
+          },
+          "autoMitigate": {
+            "value": "[parameters('LAWDailyCapLimitAutoMitigate')]"
+          },
+          "timeAggregation": {
+            "value": "[parameters('LAWDailyCapLimitTimeAggregation')]"
+          },
+          "operator": {
+            "value": "[parameters('LAWDailyCapLimitOperator')]"
+          },
+          "UAMIResourceId": {
+            "value": "[if(empty(parameters('BYOUserAssignedManagedIdentityResourceId')), concat('/subscriptions/', parameters('ALZManagementSubscriptionId'), '/resourceGroups/', parameters('ALZMonitorResourceGroupName'), '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('ALZUserAssignedManagedIdentityName')),parameters('BYOUserAssignedManagedIdentityResourceId'))]"
+          },
+          "failingPeriods": {
+            "value": "[parameters('LAWDailyCapLimitFailingPeriods')]"
+          },
+          "evaluationPeriods": {
+            "value": "[parameters('LAWDailyCapLimitEvaluationPeriods')]"
           }
         }
       },
@@ -286,11 +570,17 @@
           "effect": {
             "value": "[parameters('AATotalJobAlertPolicyEffect')]"
           },
-          "enabled": {
-            "value": "[parameters('AATotalJobAlertAlertState')]"
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
           },
           "evaluationFrequency": {
             "value": "[parameters('AATotalJobAlertEvaluationFrequency')]"
+          },
+          "enabled": {
+            "value": "[parameters('AATotalJobAlertAlertState')]"
           },
           "windowSize": {
             "value": "[parameters('AATotalJobAlertWindowSize')]"
@@ -309,6 +599,27 @@
         "parameters": {
           "effect": {
             "value": "[parameters('RVBackupHealthMonitorPolicyEffect')]"
+          },
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "ALZ_RVASRHealthMonitor",
+        "policyDefinitionName": "Deploy_RecoveryVault_ASRHealthMonitor_Alert",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('RVASRHealthMonitorPolicyEffect')]"
+          },
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
           }
         }
       },
@@ -319,11 +630,17 @@
           "effect": {
             "value": "[parameters('StorageAccountAvailabilityPolicyEffect')]"
           },
-          "enabled": {
-            "value": "[parameters('StorageAccountAvailabilityAlertState')]"
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
           },
           "evaluationFrequency": {
             "value": "[parameters('StorageAccountAvailabilityFrequency')]"
+          },
+          "enabled": {
+            "value": "[parameters('StorageAccountAvailabilityAlertState')]"
           },
           "windowSize": {
             "value": "[parameters('StorageAccountAvailabilityWindowSize')]"
@@ -340,17 +657,23 @@
         "policyDefinitionReferenceId": "ALZ_activitySADelete",
         "policyDefinitionName": "Deploy_activitylog_StorageAccount_Delete",
         "parameters": {
-          "alertResourceGroupLocation": {
-            "value": "[parameters('ALZMonitorResourceGroupLocation')]"
-          },
           "effect": {
             "value": "[parameters('StorageAccountDeletePolicyEffect')]"
           },
-          "alertResourceGroupName": {
-            "value": "[parameters('ALZMonitorResourceGroupName')]"
+          "MonitorDisableTagValues": {
+            "value": "[parameters('ALZMonitorDisableTagValues')]"
+          },
+          "MonitorDisableTagName": {
+            "value": "[parameters('ALZMonitorDisableTagName')]"
+          },
+          "alertResourceGroupLocation": {
+            "value": "[parameters('ALZMonitorResourceGroupLocation')]"
           },
           "alertResourceGroupTags": {
             "value": "[parameters('ALZMonitorResourceGroupTags')]"
+          },
+          "alertResourceGroupName": {
+            "value": "[parameters('ALZMonitorResourceGroupName')]"
           },
           "enabled": {
             "value": "[parameters('StorageAccountDeleteAlertState')]"

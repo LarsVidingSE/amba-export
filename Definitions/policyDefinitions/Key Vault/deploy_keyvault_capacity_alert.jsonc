@@ -2,17 +2,17 @@
   "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-definition-schema.json",
   "name": "Deploy_KeyVault_Capacity_Alert",
   "properties": {
-    "displayName": "Deploy KeyVault Capacity Alert",
+    "displayName": "Deploy Key Vault Capacity Alert",
     "description": "Policy to audit/deploy KeyVault Capacity Alert",
     "mode": "All",
     "metadata": {
+      "version": "1.2.0",
       "_deployed_by_amba": "True",
+      "source": "https://github.com/Azure/azure-monitor-baseline-alerts/",
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "version": "1.1.0",
-      "category": "Key Vault",
-      "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
+      "category": "Key Vault"
     },
     "parameters": {
       "evaluationFrequency": {
@@ -28,18 +28,6 @@
           "PT1H"
         ],
         "defaultValue": "PT1M",
-        "type": "String"
-      },
-      "effect": {
-        "metadata": {
-          "description": "Effect of the policy",
-          "displayName": "Effect"
-        },
-        "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
-        ],
-        "defaultValue": "disabled",
         "type": "String"
       },
       "autoMitigate": {
@@ -72,26 +60,6 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
-      "enabled": {
-        "metadata": {
-          "description": "Alert state for the alert",
-          "displayName": "Alert State"
-        },
-        "allowedValues": [
-          "true",
-          "false"
-        ],
-        "defaultValue": "true",
-        "type": "String"
-      },
-      "threshold": {
-        "metadata": {
-          "description": "Threshold for the alert",
-          "displayName": "Threshold"
-        },
-        "defaultValue": "75",
-        "type": "String"
-      },
       "severity": {
         "metadata": {
           "description": "Severity of the Alert",
@@ -107,10 +75,55 @@
         "defaultValue": "1",
         "type": "String"
       },
-      "MonitorDisable": {
+      "enabled": {
         "metadata": {
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled",
+          "description": "Alert state for the alert",
+          "displayName": "Alert State"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true",
+        "type": "String"
+      },
+      "MonitorDisableTagValues": {
+        "metadata": {
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
+      "effect": {
+        "metadata": {
+          "description": "Effect of the policy",
           "displayName": "Effect"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "disabled",
+        "type": "String"
+      },
+      "threshold": {
+        "metadata": {
+          "description": "Threshold for the alert",
+          "displayName": "Threshold"
+        },
+        "defaultValue": "75",
+        "type": "String"
+      },
+      "MonitorDisableTagName": {
+        "metadata": {
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
         },
         "defaultValue": "MonitorDisable",
         "type": "String"
@@ -124,8 +137,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -176,7 +189,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-SaturationShoebox-threshold-Override_'), field('tags._amba-SaturationShoebox-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].StaticThresholdCriterion.threshold"
               }
             ]
@@ -199,14 +212,14 @@
                 "windowSize": {
                   "value": "[parameters('windowSize')]"
                 },
+                "severity": {
+                  "value": "[parameters('severity')]"
+                },
                 "enabled": {
                   "value": "[parameters('enabled')]"
                 },
                 "threshold": {
-                  "value": "[parameters('threshold')]"
-                },
-                "severity": {
-                  "value": "[parameters('severity')]"
+                  "value": "[if(contains(field('tags'), '_amba-SaturationShoebox-threshold-Override_'), field('tags._amba-SaturationShoebox-threshold-Override_'), parameters('threshold'))]"
                 },
                 "resourceName": {
                   "value": "[field('name')]"
@@ -230,13 +243,13 @@
                   "windowSize": {
                     "type": "String"
                   },
+                  "severity": {
+                    "type": "String"
+                  },
                   "enabled": {
                     "type": "String"
                   },
                   "threshold": {
-                    "type": "String"
-                  },
-                  "severity": {
                     "type": "String"
                   },
                   "resourceName": {
@@ -264,30 +277,30 @@
                         "windowSize": {
                           "value": "[parameters('windowSize')]"
                         },
+                        "severity": {
+                          "value": "[parameters('severity')]"
+                        },
                         "enabled": {
                           "value": "[parameters('enabled')]"
                         },
                         "threshold": {
                           "value": "[parameters('threshold')]"
-                        },
-                        "severity": {
-                          "value": "[parameters('severity')]"
                         }
                       },
                       "evaluationFrequency": "[parameters('evaluationFrequency')]",
                       "autoMitigate": "[parameters('autoMitigate')]",
                       "windowSize": "[parameters('windowSize')]",
-                      "enabled": "[parameters('enabled')]",
                       "severity": "[parameters('severity')]",
+                      "enabled": "[parameters('enabled')]",
                       "criteria": {
                         "allOf": [
                           {
                             "threshold": "[parameters('threshold')]",
                             "timeAggregation": "Average",
-                            "operator": "GreaterThan",
-                            "name": "SaturationShoebox",
                             "metricNamespace": "microsoft.keyvault/vaults",
+                            "operator": "GreaterThan",
                             "criterionType": "StaticThresholdCriterion",
+                            "name": "SaturationShoebox",
                             "metricName": "SaturationShoebox"
                           }
                         ],

@@ -2,13 +2,24 @@
 
 Policies from the [Azure Monitor Baseline Alerts](https://azure.github.io/azure-monitor-baseline-alerts/welcome/) project extracted for use in [EPAC](https://aka.ms/epac).
 
-## Usage
+The definitions files are updated weekly around Thursday by deploying the solution and then extracting all the policies.
 
+## Deployment Patterns
+
+- If you are following the ALZ deployment methodology use the files below to assign alerting policies to the correct scopes
+  - alerting-connectivity-policySet.jsonc
+  - alerting-identity-policySet.jsonc
+  - alerting-management-policySet.jsonc
+  - alerting-servicehealth-policySet.jsonc
+  - notification-assets-policySet.jsonc
+- All other files are designed to be scoped to the landing zones management group in your environment.
 - Copy the files from the ```Definitions``` folder to your own EPAC repo.
 - Adjust the following fields in the assignment files to suit your environment.
-    - ```scope```
-    - ```managedIdentityLocations```
-    - ```parameters```
+  - ```scope```
+  - ```managedIdentityLocations```
+  - ```parameters```
+
+- If you are not following the ALZ structure and want to deploy alerts for a single group of services e.g. Key Vault - then deploy the matching policy assignment. In the case of Key Vault you would deploy ```alerting-keymanagement-policySet.jsonc```
 
 ## Caveats
 

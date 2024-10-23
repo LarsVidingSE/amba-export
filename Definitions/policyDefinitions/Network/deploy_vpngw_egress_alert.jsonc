@@ -7,26 +7,14 @@
     "mode": "All",
     "metadata": {
       "_deployed_by_amba": "True",
-      "version": "1.1.0",
+      "category": "Network",
+      "version": "1.2.0",
       "alzCloudEnvironments": [
         "AzureCloud"
       ],
-      "category": "Network",
       "source": "https://github.com/Azure/azure-monitor-baseline-alerts/"
     },
     "parameters": {
-      "effect": {
-        "metadata": {
-          "description": "Effect of the policy",
-          "displayName": "Effect"
-        },
-        "allowedValues": [
-          "deployIfNotExists",
-          "disabled"
-        ],
-        "defaultValue": "disabled",
-        "type": "String"
-      },
       "evaluationFrequency": {
         "metadata": {
           "description": "Evaluation frequency for the alert",
@@ -72,6 +60,18 @@
         "defaultValue": "PT5M",
         "type": "String"
       },
+      "effect": {
+        "metadata": {
+          "description": "Effect of the policy",
+          "displayName": "Effect"
+        },
+        "allowedValues": [
+          "deployIfNotExists",
+          "disabled"
+        ],
+        "defaultValue": "disabled",
+        "type": "String"
+      },
       "severity": {
         "metadata": {
           "description": "Severity of the Alert",
@@ -107,10 +107,23 @@
         "defaultValue": "1",
         "type": "String"
       },
-      "MonitorDisable": {
+      "MonitorDisableTagValues": {
         "metadata": {
-          "description": "Tag name to disable monitoring resource. Set to true if monitoring should be disabled",
-          "displayName": "Effect"
+          "description": "Tag value(s) used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag values(s)"
+        },
+        "defaultValue": [
+          "true",
+          "Test",
+          "Dev",
+          "Sandbox"
+        ],
+        "type": "Array"
+      },
+      "MonitorDisableTagName": {
+        "metadata": {
+          "description": "Tag name used to disable monitoring at the resource level. Set to true if monitoring should be disabled.",
+          "displayName": "ALZ Monitoring disabled tag name"
         },
         "defaultValue": "MonitorDisable",
         "type": "String"
@@ -124,8 +137,8 @@
             "field": "type"
           },
           {
-            "field": "[concat('tags[', parameters('MonitorDisable'), ']')]",
-            "notEquals": "true"
+            "field": "[concat('tags[', parameters('MonitorDisableTagName'), ']')]",
+            "notIn": "[parameters('MonitorDisableTagValues')]"
           }
         ]
       },
@@ -176,7 +189,7 @@
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].operator"
               },
               {
-                "equals": "[parameters('threshold')]",
+                "equals": "[if(contains(field('tags'), '_amba-tunnelegressbytes-threshold-Override_'), field('tags._amba-tunnelegressbytes-threshold-Override_'), parameters('threshold'))]",
                 "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft-Azure-Monitor-SingleResourceMultipleMetricCriteria.allOf[*].threshold"
               }
             ]
@@ -205,14 +218,13 @@
                 "enabled": {
                   "value": "[parameters('enabled')]"
                 },
+                "threshold": {
+                  "value": "[if(contains(field('tags'), '_amba-tunnelegressbytes-threshold-Override_'), field('tags._amba-tunnelegressbytes-threshold-Override_'), parameters('threshold'))]"
+                },
                 "resourceName": {
                   "value": "[field('name')]"
-                },
-                "threshold": {
-                  "value": "[parameters('threshold')]"
                 }
               },
-              "mode": "incremental",
               "template": {
                 "parameters": {
                   "resourceId": {
@@ -237,14 +249,14 @@
                   "enabled": {
                     "type": "String"
                   },
+                  "threshold": {
+                    "type": "String"
+                  },
                   "resourceName": {
                     "metadata": {
                       "description": "Name of the resource",
                       "displayName": "resourceName"
                     },
-                    "type": "String"
-                  },
-                  "threshold": {
                     "type": "String"
                   }
                 },
@@ -283,12 +295,12 @@
                         "allOf": [
                           {
                             "threshold": "[parameters('threshold')]",
-                            "name": "tunnelegressbytes",
-                            "metricNamespace": "microsoft.network/vpngateways",
                             "timeAggregation": "Average",
+                            "metricNamespace": "microsoft.network/vpngateways",
                             "criterionType": "StaticThresholdCriterion",
+                            "operator": "LessThan",
                             "metricName": "tunnelegressbytes",
-                            "operator": "LessThan"
+                            "name": "tunnelegressbytes"
                           }
                         ],
                         "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
@@ -297,8 +309,8 @@
                         "[parameters('resourceId')]"
                       ]
                     },
-                    "name": "[concat(parameters('resourceName'), '-TunnelEgressAlert')]",
                     "apiVersion": "2018-03-01",
+                    "name": "[concat(parameters('resourceName'), '-TunnelEgressAlert')]",
                     "location": "global",
                     "tags": {
                       "_deployed_by_amba": true
@@ -307,7 +319,8 @@
                 ],
                 "variables": {},
                 "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
-              }
+              },
+              "mode": "incremental"
             }
           }
         }
